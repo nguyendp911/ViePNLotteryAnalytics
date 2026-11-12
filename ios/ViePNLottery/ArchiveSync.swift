@@ -59,7 +59,8 @@ extension LotteryDatabase {
             if batch.count >= 2000 { inserted += try importRows(batch); batch.removeAll(keepingCapacity:true) }
         }
         if !batch.isEmpty { inserted += try importRows(batch) }
-        guard inserted > 0 || (try hasQuarterRecords(quarter)) else {
+        let containsRecords = inserted > 0 ? true : (try hasQuarterRecords(quarter))
+        guard containsRecords else {
             throw LotteryDataError.database("Lưu trữ rỗng hoặc không có dữ liệu hợp lệ: "+quarter)
         }
         try execute("CREATE TABLE IF NOT EXISTS imported_quarters (quarter TEXT PRIMARY KEY, count INTEGER NOT NULL, imported_at TEXT NOT NULL);")

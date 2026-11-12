@@ -103,7 +103,7 @@ enum QuarterArchiveSync {
         var output:[(year:Int,quarter:Int,key:String)]=[]
         for y in 2021...year {
             for q in 1...4 where (y>2021 || q==4) && (y<year || q<currentQuarter) {
-                output.append((y,q,"\\(y)Q\\(q)"))
+                output.append((y,q,"\(y)Q\(q)"))
             }
         }
         return output
@@ -117,7 +117,7 @@ enum QuarterArchiveSync {
             do {
                 if try db.importedQuarter(item.key) { continue }
                 onProgress("Đang tải "+item.key)
-                let address="\\(repository)/\\(item.year)/Q\\(item.quarter)/kqxs_\\(item.year)_Q\\(item.quarter).sqlite"
+                let address="\(repository)/\(item.year)/Q\(item.quarter)/kqxs_\(item.year)_Q\(item.quarter).sqlite"
                 guard let url=URL(string:address) else { continue }
                 var request=URLRequest(url:url)
                 request.timeoutInterval=45
@@ -126,7 +126,7 @@ enum QuarterArchiveSync {
                     summary.pending.append(item.key)
                     continue
                 }
-                let destination=fm.temporaryDirectory.appendingPathComponent("lottery-\\(item.key).sqlite")
+                let destination=fm.temporaryDirectory.appendingPathComponent("lottery-\(item.key).sqlite")
                 try? fm.removeItem(at:destination)
                 try fm.moveItem(at:temp,to:destination)
                 defer { try? fm.removeItem(at:destination) }

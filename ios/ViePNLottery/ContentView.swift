@@ -53,7 +53,7 @@ final class LotteryModel: ObservableObject {
             self?.message = status
         }
         refresh()
-        message = "Đã tải \\(summary.quartersDownloaded) quý, thêm \\(summary.rowsAdded) kết quả. Chưa có: \\(summary.pending.joined(separator: ", ")). Lỗi: \\(summary.failures.prefix(4).joined(separator: " | ")). Quý hiện tại chưa có trong kho lưu trữ."
+        message = "Đã tải \(summary.quartersDownloaded) quý, thêm \(summary.rowsAdded) kết quả. Chưa có: \(summary.pending.joined(separator: ", ")). Lỗi: \(summary.failures.prefix(4).joined(separator: " | ")). Quý hiện tại chưa có trong kho lưu trữ."
     }
 
     func synchronize() async {

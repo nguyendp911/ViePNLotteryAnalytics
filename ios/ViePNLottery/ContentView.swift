@@ -46,6 +46,16 @@ final class LotteryModel: ObservableObject {
             refresh()
         } catch { message = error.localizedDescription }
     }
+    func synchronizeHistory() async {
+        busy = true
+        defer { busy = false }
+        let summary = await QuarterArchiveSync.synchronize { [weak self] status in
+            self?.message = status
+        }
+        refresh()
+        message = "Đã tải \\(summary.quartersDownloaded) quý, thêm \\(summary.rowsAdded) kết quả. Chưa có: \\(summary.pending.joined(separator: ", ")). Lỗi: \\(summary.failures.prefix(4).joined(separator: " | ")). Quý hiện tại chưa có trong kho lưu trữ."
+    }
+
     func synchronize() async {
         busy = true
         defer { busy = false }
@@ -117,6 +127,11 @@ struct ContentView: View {
                     Text("Mục tiêu: 12/11/2021 đến hiện tại.").font(.footnote).foregroundStyle(.secondary)
                     Text("Từ: \(model.quality?.earliest ?? "—") · Đến: \(model.quality?.latest ?? "—")")
                         .font(.footnote)
+                    Button { Task { await model.synchronizeHistory() } } label: {
+                        Label("Đồng bộ lịch sử tự động (2021–nay)",systemImage:"arrow.down.circle")
+                    }.disabled(model.busy).buttonStyle(.borderedProminent)
+                    Text("Tải các quý đã hoàn tất từ kho dữ liệu công khai; quý hiện tại cần nguồn cập nhật bổ sung.")
+                        .font(.caption).foregroundStyle(.secondary)
                     Button { importing = true } label: {
                         Label("Nhập CSV",systemImage:"square.and.arrow.down")
                     }.buttonStyle(.borderedProminent)

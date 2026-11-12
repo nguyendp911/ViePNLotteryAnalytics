@@ -46,7 +46,7 @@ final class LotteryDatabase {
         try execute("CREATE INDEX IF NOT EXISTS idx_results_search ON results(region,station,date);")
     }
     deinit { sqlite3_close(db) }
-    private func execute(_ sql: String) throws {
+    func execute(_ sql: String) throws {
         var error: UnsafeMutablePointer<CChar>?
         if sqlite3_exec(db, sql, nil, nil, &error) != SQLITE_OK {
             let detail = error.map { String(cString: $0) } ?? "Query failed"
@@ -54,14 +54,14 @@ final class LotteryDatabase {
             throw LotteryDataError.database(detail)
         }
     }
-    private func prepare(_ sql: String) throws -> OpaquePointer? {
+    func prepare(_ sql: String) throws -> OpaquePointer? {
         var stmt: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else {
             throw LotteryDataError.database(String(cString: sqlite3_errmsg(db)))
         }
         return stmt
     }
-    private func bind(_ stmt: OpaquePointer?, _ values: [String]) {
+    func bind(_ stmt: OpaquePointer?, _ values: [String]) {
         for (index,value) in values.enumerated() {
             _ = value.withCString {
                 sqlite3_bind_text(stmt, Int32(index + 1), $0, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
